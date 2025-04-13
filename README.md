@@ -1,1 +1,67 @@
-# FCFS-OS-
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+struct Process 
+{
+    int pid;     // Process ID
+    int at;      // Arrival Time
+    int bt;      // Burst Time
+    int ct;      // Completion Time
+    int tat;     // Turnaround Time
+    int wt;      // Waiting Time
+};
+
+bool compareByArrival(Process a, Process b)
+{
+    return a.at < b.at;
+}
+
+int main()
+{
+    int n;
+    cout << "Enter number of processes: ";
+    cin >> n;
+
+    vector<Process> p(n);
+
+    for (int i = 0; i < n; i++) {
+        p[i].pid = i + 1;
+        cout << "Enter Arrival Time for Process " << p[i].pid << ": ";
+        cin >> p[i].at;
+        cout << "Enter Burst Time for Process " << p[i].pid << ": ";
+        cin >> p[i].bt;
+    }
+
+    // Sort processes by arrival time
+    sort(p.begin(), p.end(), compareByArrival);
+
+    int current_time = 0;
+    float total_wt = 0, total_tat = 0;
+
+    for (int i = 0; i < n; i++) {
+        if (current_time < p[i].at)
+            current_time = p[i].at;
+        
+        p[i].ct = current_time + p[i].bt;
+        p[i].tat = p[i].ct - p[i].at;
+        p[i].wt = p[i].tat - p[i].bt;
+        current_time = p[i].ct;
+
+        total_wt += p[i].wt;
+        total_tat += p[i].tat;
+    }
+
+    cout << "\nProcess\tAT\tBT\tCT\tTAT\tWT\n";
+    for (int i = 0; i < n; i++) {
+        cout << "P" << p[i].pid << "\t" << p[i].at << "\t" << p[i].bt << "\t" 
+             << p[i].ct << "\t" << p[i].tat << "\t" << p[i].wt << "\n";
+    }
+
+    cout << "\nAverage Waiting Time: " << total_wt / n;
+    cout << "\nAverage Turnaround Time: " << total_tat / n << endl;
+
+    return 0;
+}
